@@ -1,5 +1,5 @@
 class RecipesController < ApplicationController
-  before_filter :require_login, except: [:index, :show]
+  before_action :require_login, except: [:index, :show]
 
   def index
     @recipes = Recipe.all
@@ -15,7 +15,7 @@ class RecipesController < ApplicationController
   end
 
   def create
-    @recipe = current_user.recipes.build(params[:recipe])
+    @recipe = current_user.recipes.build(recipe_params)
     if @recipe.save
       redirect_to @recipe, notice: "Recipe was created."
     else
@@ -29,7 +29,7 @@ class RecipesController < ApplicationController
 
   def update
     @recipe = current_user.recipes.find(params[:id])
-    if @recipe.update_attributes(params[:recipe])
+    if @recipe.update_attributes(recipe_params)
       redirect_to @recipe, notice: "Recipe was updated."
     else
       render :edit
@@ -40,5 +40,10 @@ class RecipesController < ApplicationController
     @recipe = current_user.recipes.find(params[:id])
     @recipe.destroy
     redirect_to recipes_url, notice: "Recipe was destroyed."
+  end
+
+  private
+  def recipe_params
+    params.require(:recipe).permit(:description, :image_url, :name)
   end
 end

@@ -1,9 +1,9 @@
 class CommentsController < ApplicationController
-  before_filter :require_login
-  before_filter :load_recipe
+  before_action :require_login
+  before_action :load_recipe
 
   def create
-    @comment = @recipe.comments.build(params[:comment])
+    @comment = @recipe.comments.build(comment_params)
     @comment.user = current_user
     if @comment.save
       redirect_to @recipe, notice: "Comment was created."
@@ -18,7 +18,7 @@ class CommentsController < ApplicationController
 
   def update
     @comment = current_user.comments.find(params[:id])
-    if @comment.update_attributes(params[:comment])
+    if @comment.update_attributes(comment_params)
       redirect_to @recipe, notice: "Comment was updated."
     else
       render :edit
@@ -32,6 +32,9 @@ class CommentsController < ApplicationController
   end
 
 private
+  def comment_params
+    params.require(:comment).permit(:content)
+  end
 
   def load_recipe
     @recipe = Recipe.find(params[:recipe_id])
