@@ -6,7 +6,8 @@ class CommentsController < ApplicationController
     @comment = @recipe.comments.build(comment_params)
     @comment.user = current_user
     if @comment.save
-      redirect_to @recipe, notice: "Comment was created."
+     track_activity @comment
+     redirect_to @recipe, notice: "Comment was created."
     else
       render :new
     end
@@ -19,6 +20,7 @@ class CommentsController < ApplicationController
   def update
     @comment = current_user.comments.find(params[:id])
     if @comment.update_attributes(comment_params)
+      track_activity @comment
       redirect_to @recipe, notice: "Comment was updated."
     else
       render :edit
@@ -28,6 +30,7 @@ class CommentsController < ApplicationController
   def destroy
     @comment = current_user.comments.find(params[:id])
     @comment.destroy
+    track_activity @comment
     redirect_to @recipe, notice: "Comment was destroyed."
   end
 

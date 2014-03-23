@@ -17,7 +17,8 @@ class RecipesController < ApplicationController
   def create
     @recipe = current_user.recipes.build(recipe_params)
     if @recipe.save
-      redirect_to @recipe, notice: "Recipe was created."
+      track_activity @recipe
+      current_user.activities.redirect_to @recipe, notice: "Recipe was created."
     else
       render :new
     end
@@ -30,6 +31,7 @@ class RecipesController < ApplicationController
   def update
     @recipe = current_user.recipes.find(params[:id])
     if @recipe.update_attributes(recipe_params)
+      track_activity @recipe
       redirect_to @recipe, notice: "Recipe was updated."
     else
       render :edit
@@ -39,6 +41,7 @@ class RecipesController < ApplicationController
   def destroy
     @recipe = current_user.recipes.find(params[:id])
     @recipe.destroy
+    track_activity @recipe
     redirect_to recipes_url, notice: "Recipe was destroyed."
   end
 
